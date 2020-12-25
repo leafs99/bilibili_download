@@ -55,6 +55,7 @@ func GetPlayerInfo(url string) (*types.PlayInfo, error) {
 	}
 	defer resp.Body.Close()
 	body := readBody(resp.Body)
+	// fmt.Printf("get resp body: %s\n", body)
 	result := REGEXP_PLAYINFO.FindStringSubmatch(body)
 	if len(result) < 2 {
 		return nil, errors.New("Could not find play infomation")

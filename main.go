@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
 
 	"github.com/jasonjoo2010/bilibili-download/util"
 )
@@ -68,14 +69,24 @@ func main() {
 			audioStream = s
 		}
 		fmt.Println("Download video stream ... ")
-		output_file = "video." + util.GetExt(videoStream.URL)
-		err = util.Download(videoStream.URL, output_file)
+		videoOutputFile := "video." + util.GetExt(videoStream.URL)
+		err = util.Download(videoStream.URL, videoOutputFile)
 		if err != nil {
 			goto OUTPUT_ERROR
 		}
 		fmt.Println("Download audio stream ... ")
-		output_file = "audio." + util.GetExt(audioStream.URL)
-		err = util.Download(audioStream.URL, output_file)
+		audioOutputFile := "audio." + util.GetExt(audioStream.URL)
+		err = util.Download(audioStream.URL, audioOutputFile)
+		if err != nil {
+			goto OUTPUT_ERROR
+		}
+		fmt.Println("will combine video and audio")
+		cmd := exec.Command("ffmpeg", "-i", audioOutputFile, "-i", videoOutputFile, "-c:v", "copy", "output2.mp4")
+		// var out bytes.Buffer
+		// var stderr bytes.Buffer
+		// cmd.Stdout = &out
+		// cmd.Stderr = &stderr
+		err = cmd.Run()
 		if err != nil {
 			goto OUTPUT_ERROR
 		}
